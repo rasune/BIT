@@ -25,6 +25,27 @@
 	JOIN sales_salesorderheader soh  ON ss.salesorderID = soh.salesorderID
 	JOIN sales_salesterritory st ON  soh.TerritoryID = st.TerritoryID
 
+
+ SELECT
+ pc.ProductCategoryID
+    , pc.Name AS CategoryName
+    ,st.TerritoryID 
+    , st.Name AS TeritorryName
+    , CASE
+  WHEN soh.OnlineOrderFlag =  1 THEN 'Online'
+        ELSE 'Direct'
+        END AS Tipas
+ , YEAR(soh.OrderDate) AS Metai
+    , QUARTER(soh.OrderDate) AS Ketvirtis
+    , ROUND(SUM(sod.LineTotal), 2) AS CategoryRevenue
+FROM sales_salesorderdetail sod
+    JOIN production_product p ON sod.ProductID = p.ProductID
+    LEFT JOIN production_productsubcategory psc ON p.ProductSubcategoryID = psc.ProductSubcategoryID
+    LEFT JOIN production_productcategory pc ON psc.ProductCategoryID = pc.ProductCategoryID
+ JOIN sales_salesorderheader soh ON sod.SalesOrderID = soh.SalesOrderID
+ JOIN sales_salesterritory st ON  soh.TerritoryID = st.TerritoryID
+GROUP BY pc.ProductCategoryID, CategoryName, st.TerritoryID, TeritorryName, Tipas, Metai, Ketvirtis;
+ 
  --2. Apskaičiuoti bendras pajama bei runningtotal kiekvienai kategorijai pagal metus ir ketvirčius.
 
  -- 3.Naudok Case , kad kategorijas susikirstytumeme i "High Profit' ir 'Low Profit".
