@@ -1,10 +1,10 @@
 -- uzduotis3: produktu kategoriju pelningumo analize per laika teritorijose ir pardavimo
- -- kanaluose
- -- naudok production_product, production_productsubcategory, production_productcategory,
- -- sales_salesorderdetails, sale_slaeterritory ir sales_salesorderheader lenteles
- -- 1.susiek produktus   su ju subkategorijomis, kategorijoms, teritorijomis  ir pardavimo
- --  kanalais 
-  SELECT pp.productID,
+-- kanaluose
+-- naudok production_product, production_productsubcategory, production_productcategory,
+-- sales_salesorderdetails, sale_slaeterritory ir sales_salesorderheader lenteles
+- 1.susiek produktus   su ju subkategorijomis, kategorijoms, teritorijomis  ir pardavimo
+--  kanalais 
+SELECT pp.productID,
 	pp.Name AS produktas,
 	ps.ProductSubcategoryID,
 	ps.Name AS sub_kategorija,
@@ -18,7 +18,7 @@
 		WHEN soh.OnlineOrderFlag = 1 THEN  'online' 
 		ELSE 'direct' 
     END AS sales_channel
- FROM  production_product pp
+FROM  production_product pp
 	JOIN production_productsubcategory ps ON ps.ProductSubcategoryID = pp.ProductSubcategoryID
 	JOIN production_productcategory pc ON ps.ProductCategoryID = pc.ProductCategoryID
 	JOIN sales_salesorderdetail ss  ON pp.productID = ss.ProductID
@@ -26,27 +26,27 @@
 	JOIN sales_salesterritory st ON  soh.TerritoryID = st.TerritoryID
 
 
- SELECT
- pc.ProductCategoryID
+SELECT
+pc.ProductCategoryID
     , pc.Name AS CategoryName
     ,st.TerritoryID 
     , st.Name AS TeritorryName
     , CASE
-  WHEN soh.OnlineOrderFlag =  1 THEN 'Online'
+WHEN soh.OnlineOrderFlag =  1 THEN 'Online'
         ELSE 'Direct'
         END AS Tipas
- , YEAR(soh.OrderDate) AS Metai
+, YEAR(soh.OrderDate) AS Metai
     , QUARTER(soh.OrderDate) AS Ketvirtis
     , ROUND(SUM(sod.LineTotal), 2) AS CategoryRevenue
 FROM sales_salesorderdetail sod
     JOIN production_product p ON sod.ProductID = p.ProductID
     LEFT JOIN production_productsubcategory psc ON p.ProductSubcategoryID = psc.ProductSubcategoryID
     LEFT JOIN production_productcategory pc ON psc.ProductCategoryID = pc.ProductCategoryID
- JOIN sales_salesorderheader soh ON sod.SalesOrderID = soh.SalesOrderID
- JOIN sales_salesterritory st ON  soh.TerritoryID = st.TerritoryID
+JOIN sales_salesorderheader soh ON sod.SalesOrderID = soh.SalesOrderID
+JOIN sales_salesterritory st ON  soh.TerritoryID = st.TerritoryID
 GROUP BY pc.ProductCategoryID, CategoryName, st.TerritoryID, TeritorryName, Tipas, Metai, Ketvirtis;
- 
- --2. Apskaičiuoti bendras pajama bei runningtotal kiekvienai kategorijai pagal metus ir ketvirčius.
 
- -- 3.Naudok Case , kad kategorijas susikirstytumeme i "High Profit' ir 'Low Profit".
- -- ė
+--2. Apskaičiuoti bendras pajama bei runningtotal kiekvienai kategorijai pagal metus ir ketvirčius.
+
+-- 3.Naudok Case , kad kategorijas susikirstytumeme i "High Profit' ir 'Low Profit".
+-- ė
